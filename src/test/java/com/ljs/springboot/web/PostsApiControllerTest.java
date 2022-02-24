@@ -93,6 +93,28 @@ public class PostsApiControllerTest {
     }
 
     @Test
+    public void deleteTest() {
+        // given
+        Posts savedPosts = postsRepository.save(Posts.builder().title("title").author("author").content("content").build());
+
+        Long deleteId = savedPosts.getId();
+
+        String url = "http://localhost:" + port + "/api/v1/posts/" + deleteId;
+
+        HttpEntity<Posts> requestEntity = new HttpEntity<>(savedPosts);
+
+        // when
+        ResponseEntity<Long> responseEntity = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Long.class);
+
+        // then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isGreaterThan(0L);
+
+        List<Posts> postsList = postsRepository.findAll();
+        assertThat(postsList).isEmpty();
+    }
+
+    @Test
     public void baseTimeTest() {
         // given
         LocalDateTime now = LocalDateTime.of(2022, 2, 22, 2, 22, 22);
